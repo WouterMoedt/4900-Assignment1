@@ -3,7 +3,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from .models import Post
 from django.core.mail import send_mail
+from django.shortcuts import redirect
 
+def redirect_view(request):
+    response = redirect('/blog/')
+    return response
 
 def post_list(request):
     object_list = Post.published.all()
