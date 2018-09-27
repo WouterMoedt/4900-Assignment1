@@ -3,7 +3,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from django.core.mail import send_mail
 from .models import Post
-from .forms import EmailPostForm
+from . import forms
 from django.shortcuts import redirect
 
 def redirect_view(request):
@@ -50,7 +50,7 @@ def post_share(request, post_id):
 
     if request.method == 'POST':
         # Form was submitted
-        form = EmailPostForm(request.POST)
+        form = forms.EmailPostForm(request.POST)
         if form.is_valid():
             # Form fields passed validation
             cd = form.cleaned_data
@@ -62,7 +62,7 @@ def post_share(request, post_id):
                       [cd['to']])
             sent = True
     else:
-        form = EmailPostForm()
+        form = forms.EmailPostForm()
     return render(request, 'blog/post/share.html', {'post': post,
                                                     'form': form,
                                                     'sent': sent})
