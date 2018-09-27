@@ -6,6 +6,7 @@ from .models import Post
 from .forms import EmailPostForm
 from django.shortcuts import redirect
 
+# Used to directly redirect from the homepage to /blog
 def redirect_view(request):
     response = redirect('/blog/')
     return response
@@ -66,7 +67,3 @@ def post_share(request, post_id):
     return render(request, 'blog/post/share.html', {'post': post,
                                                     'form': form,
                                                     'sent': sent})
-
-
-def home(request):
-    return render(request, "home.html")

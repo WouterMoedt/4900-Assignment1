@@ -17,11 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from blog.views import redirect_view
-from blog import views
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('blog/', include('blog.urls', namespace='blog')),
-    path('', redirect_view),
+    path('', redirect_view), # Used to directly redirect from the homepage to /blog
 ]
