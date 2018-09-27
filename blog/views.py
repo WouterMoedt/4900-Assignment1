@@ -3,36 +3,12 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from django.core.mail import send_mail
 from .models import Post
-from . import forms
+from .forms import EmailPostForm
 from django.shortcuts import redirect
 
 def redirect_view(request):
     response = redirect('/blog/')
     return response
-
-def post_share(request, post_id):
-    # Retrieve post by id
-    post = get_object_or_404(Post, id=post_id, status='published')
-    sent = False
-
-    if request.method == 'POST':
-        # Form was submitted
-        form = forms.EmailPostForm(request.POST)
-        if form.is_valid():
-            # Form fields passed validation
-            cd = form.cleaned_data
-            post_url = request.build_absolute_uri(
-                post.get_absolute_url())
-            subject = '{} ({}) recommends you reading "{}"'.format(cd['name'], cd['email'], post.title)
-            message = 'Read "{}" at {}\n\n{}\'s comments: {}'.format(post.title, post_url, cd['name'], cd['comments'])
-            send_mail(subject, message, 'isqa4900test@gmail.com',
-                      [cd['to']])
-            sent = True
-    else:
-        form = forms.EmailPostForm()
-    return render(request, 'blog/post/share.html', {'post': post,
-                                                    'form': form,
-                                                    'sent': sent})
 
 def post_list(request):
     post = Post.published.all()
@@ -51,11 +27,6 @@ def post_list(request):
                   {'page': page,
                    'posts': posts})
 
-class PostListView(ListView):
-    queryset = Post.published.all()
-    context_object_name = 'posts'
-    paginate_by = 3
-    template_name = 'blog/post/list.html'
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Post, slug=post, status='published', publish__year=year, publish__month=month,
@@ -63,6 +34,39 @@ def post_detail(request, year, month, day, post):
     return render(request,
                   'blog/post/detail.html',
                   {'post': post})
+
+
+class PostListView(ListView):
+    queryset = Post.published.all()
+    context_object_name = 'posts'
+    paginate_by = 3
+    template_name = 'blog/post/list.html'
+
+
+def post_share(request, post_id):
+    # Retrieve post by id
+    post = get_object_or_404(Post, id=post_id, status='published')
+    sent = False
+
+    if request.method == 'POST':
+        # Form was submitted
+        form = EmailPostForm(request.POST)
+        if form.is_valid():
+            # Form fields passed validation
+            cd = form.cleaned_data
+            post_url = request.build_absolute_uri(
+                post.get_absolute_url())
+            subject = '{} ({}) recommends you reading "{}"'.format(cd['name'], cd['email'], post.title)
+            message = 'Read "{}" at {}\n\n{}\'s comments: {}'.format(post.title, post_url, cd['name'], cd['comments'])
+            send_mail(subject, message, 'admin@myblog.com',
+                      [cd['to']])
+            sent = True
+    else:
+        form = EmailPostForm()
+    return render(request, 'blog/post/share.html', {'post': post,
+                                                    'form': form,
+                                                    'sent': sent})
+
 
 def home(request):
     return render(request, "home.html")
