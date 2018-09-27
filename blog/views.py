@@ -6,7 +6,6 @@ from .models import Post
 from .forms import EmailPostForm
 from django.shortcuts import redirect
 
-# Used to directly redirect from the homepage to /blog
 def redirect_view(request):
     response = redirect('/blog/')
     return response
