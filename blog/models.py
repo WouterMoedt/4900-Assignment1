@@ -3,12 +3,10 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
 
-
 class PublishedManager(models.Manager):
     def get_queryset(self):
         return super(PublishedManager,
                      self).get_queryset() .filter(status='published')
-
 
 class Post (models.Model):
     STATUS_CHOICES = (
@@ -37,7 +35,6 @@ class Post (models.Model):
                              self.publish.month,
                              self.publish.day,
                              self.slug])
-
     class Meta:
         ordering = ('-publish',)
 
